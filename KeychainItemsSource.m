@@ -9,15 +9,18 @@
 #import <Vermilion/Vermilion.h>
 #import <Security/Security.h>
 
+#define kHGSTypeKeychainAction HGS_SUBTYPE(kHGSTypeAction, @"keychain")
+
 @interface KeychainItemsSource : HGSMemorySearchSource
 - (void)updateIndex;
 @end
 
 // callback for when the keychain has been updated
 static OSStatus KeychainModified(SecKeychainEvent keychainEvent,
-								 SecKeychainCallbackInfo *info,
-								 void *context)
+                                 SecKeychainCallbackInfo *info,
+                                 void *context)
 {
+	HGSLogDebug(@"KeychainItemsSource: modification event received");
 	KeychainItemsSource *source = (KeychainItemsSource *)context;
 	[source updateIndex];
 	return noErr;
@@ -30,38 +33,42 @@ static OSStatus KeychainModified(SecKeychainEvent keychainEvent,
 	SecKeychainAttribute labelAttr;
 	labelAttr.tag = kSecLabelItemAttr;
 	SecKeychainAttributeList attrList = {1, &labelAttr};
-
+  
 	// retrieve the attributes
-	OSStatus status = SecKeychainItemCopyContent(itemRef, NULL, &attrList, NULL, NULL);
-	if (status != noErr) {
-		NSLog(@"KeychainItemsSource: error %d while getting item content", status);
+	OSStatus result = SecKeychainItemCopyContent(itemRef, NULL, &attrList, NULL, NULL);
+	if (result != noErr) {
+		HGSLog(@"KeychainItemsSource: error %d while getting item content", result);
 		return nil;
 	}
-
+  
 	// create and return the result
 	NSString *label = [NSString stringWithCString:labelAttr.data
-										   length:labelAttr.length];
-	NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"keychain://%@/%@", @"default", label]];
-	NSDictionary *attributes = [NSDictionary dictionaryWithObject:[NSNumber numberWithInt:(int)itemRef] forKey:@"SecItemRef"];
-	HGSResult* result = [HGSResult resultWithURL:url
-											name:label
-											type:@"KeychainItem"
-										  source:self
-									  attributes:attributes];
-//	NSLog(@"KeychainItemsSource: adding %@ to cache", label);
-	return result;
+                                         length:labelAttr.length];
+	NSString *url = [NSString stringWithFormat:@"keychain://%@/%@", @"default", label];
+	NSDictionary *attributes = [NSDictionary dictionaryWithObject:[NSNumber numberWithInt:(int)itemRef]
+                                                         forKey:@"secItemRef"];
+	return [HGSResult resultWithURL:[NSURL URLWithString:url]
+                             name:label
+                             type:kHGSTypeKeychainAction
+                           source:self
+                       attributes:attributes];
 }
 
 - (id)initWithConfiguration:(NSDictionary *)configuration {
 	if ((self = [super initWithConfiguration:configuration])) {
 		// build the initial index
 		[self updateIndex];
-
+    
 		// register a callback for when the keychain is modified
-		OSStatus status = SecKeychainAddCallback(KeychainModified, kSecAddEventMask | kSecDeleteEventMask | kSecUpdateEventMask | kSecDefaultChangedEventMask | kSecKeychainListChangedMask, self);
-		if (status != noErr) {
-			NSLog(@"KeychainItemsSource: error %d while adding modification callback", status);
-			// can consider failure OK here
+		OSStatus result = SecKeychainAddCallback(KeychainModified,
+                                             kSecAddEventMask
+                                             | kSecDeleteEventMask 
+                                             | kSecUpdateEventMask 
+                                             | kSecDefaultChangedEventMask 
+                                             | kSecKeychainListChangedMask,
+                                             self);
+		if (result != noErr) {
+			HGSLog(@"KeychainItemsSource: error %d while adding modification callback", result);
 		}
 	}
 	return self;
@@ -69,41 +76,43 @@ static OSStatus KeychainModified(SecKeychainEvent keychainEvent,
 
 - (void)dealloc {
 	// remove the keychain modification callback
-	OSStatus status = SecKeychainRemoveCallback(KeychainModified);
-	if (status != noErr) {
-		NSLog(@"KeychainItemsSource: error %d while removing modification callback", status);
+	OSStatus result = SecKeychainRemoveCallback(KeychainModified);
+	if (result != noErr) {
+		HGSLog(@"KeychainItemsSource: error %d while removing modification callback", result);
 	}
-
+  
 	[super dealloc];
 }
 
 - (void)searchSecurityClass:(SecItemClass)targetClass {
 	SecKeychainSearchRef searchRef;
-	OSStatus status = SecKeychainSearchCreateFromAttributes(NULL, targetClass, NULL, &searchRef);
-	if (status != noErr) {
-		NSLog(@"KeychainItemsSource: error %d while starting search", status);
+	OSStatus result = SecKeychainSearchCreateFromAttributes(NULL, targetClass, NULL, &searchRef);
+	if (result != noErr) {
+		HGSLog(@"KeychainItemsSource: error %d while starting search", result);
 		return;
 	}
 	
 	SecKeychainItemRef itemRef;
-	while ((status = SecKeychainSearchCopyNext(searchRef, &itemRef)) == noErr) {
+	while ((result = SecKeychainSearchCopyNext(searchRef, &itemRef)) == noErr) {
 		
 		// create an indexable result for the item and index it
-		HGSResult* result = [[self class] resultForItem:itemRef ofClass:targetClass];
-		if (result) {
-			[self indexResult:result];
+		HGSResult* newResult = [[self class] resultForItem:itemRef ofClass:targetClass];
+		if (newResult) {
+			HGSLogDebug(@"KeychainItemsSource: adding '%@' to cache", [newResult displayName]);
+			[self indexResult:newResult];
 		}
-
+    
 		CFRelease(itemRef);
 	}
-	if (status != errSecItemNotFound) {
-		NSLog(@"KeychainItemsSource: error %d while iterating through search results", status);
+	if (result != errSecItemNotFound) {
+		HGSLog(@"KeychainItemsSource: error %d while iterating through search results", result);
 	}
 	
 	CFRelease(searchRef);
 }
 
 - (void)updateIndex {
+	HGSLogDebug(@"KeychainItemsSource: updateIndex");
 	[self clearResultIndex];
 	[self searchSecurityClass:kSecInternetPasswordItemClass];
 	[self searchSecurityClass:kSecGenericPasswordItemClass];
