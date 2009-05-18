@@ -25,14 +25,43 @@ static OSStatus KeychainModified(SecKeychainEvent keychainEvent,
 
 @implementation KeychainItemsSource
 
++ (HGSResult*)resultForItem:(SecKeychainItemRef)itemRef ofClass:(SecItemClass)itemClass {
+	// desired attributes
+	SecKeychainAttribute labelAttr;
+	labelAttr.tag = kSecLabelItemAttr;
+	SecKeychainAttributeList attrList = {1, &labelAttr};
+
+	// retrieve the attributes
+	OSStatus status = SecKeychainItemCopyContent(itemRef, NULL, &attrList, NULL, NULL);
+	if (status != noErr) {
+		NSLog(@"KeychainItemsSource: error %d while getting item content", status);
+		return nil;
+	}
+
+	// create and return the result
+	NSString *label = [NSString stringWithCString:labelAttr.data
+										   length:labelAttr.length];
+	NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"keychain://%@/%@", @"default", label]];
+	NSDictionary *attributes = [NSDictionary dictionaryWithObject:[NSNumber numberWithInt:(int)itemRef] forKey:@"SecItemRef"];
+	HGSResult* result = [HGSResult resultWithURL:url
+											name:label
+											type:@"KeychainItem"
+										  source:self
+									  attributes:attributes];
+//	NSLog(@"KeychainItemsSource: adding %@ to cache", label);
+	return result;
+}
+
 - (id)initWithConfiguration:(NSDictionary *)configuration {
 	if ((self = [super initWithConfiguration:configuration])) {
 		// build the initial index
 		[self updateIndex];
 
 		// register a callback for when the keychain is modified
-		if (SecKeychainAddCallback(KeychainModified, kSecAddEventMask | kSecDeleteEventMask | kSecUpdateEventMask | kSecDefaultChangedEventMask | kSecKeychainListChangedMask, self)) {
-			NSLog(@"error adding keychain callback");
+		OSStatus status = SecKeychainAddCallback(KeychainModified, kSecAddEventMask | kSecDeleteEventMask | kSecUpdateEventMask | kSecDefaultChangedEventMask | kSecKeychainListChangedMask, self);
+		if (status != noErr) {
+			NSLog(@"KeychainItemsSource: error %d while adding modification callback", status);
+			// can consider failure OK here
 		}
 	}
 	return self;
@@ -40,36 +69,44 @@ static OSStatus KeychainModified(SecKeychainEvent keychainEvent,
 
 - (void)dealloc {
 	// remove the keychain modification callback
-	if (SecKeychainRemoveCallback(KeychainModified)) {
-		NSLog(@"error removing keychain callback");
+	OSStatus status = SecKeychainRemoveCallback(KeychainModified);
+	if (status != noErr) {
+		NSLog(@"KeychainItemsSource: error %d while removing modification callback", status);
 	}
 
 	[super dealloc];
 }
 
-- (void)updateIndex {
-	[self clearResultIndex];
-
-	// TODO: want more than internet password items
-	SecKeychainSearchRef searchRef = NULL;
-	if (SecKeychainSearchCreateFromAttributes(NULL, kSecInternetPasswordItemClass, NULL, &searchRef)) {
-		NSLog(@"error creating keychain search");
+- (void)searchSecurityClass:(SecItemClass)targetClass {
+	SecKeychainSearchRef searchRef;
+	OSStatus status = SecKeychainSearchCreateFromAttributes(NULL, targetClass, NULL, &searchRef);
+	if (status != noErr) {
+		NSLog(@"KeychainItemsSource: error %d while starting search", status);
 		return;
 	}
-
+	
 	SecKeychainItemRef itemRef;
-	while (!SecKeychainSearchCopyNext(searchRef, &itemRef)) {
-		NSDictionary* dictionary = [NSDictionary dictionary];
-		// TODO: get the item name from the itemRef and store in the dictionary
-
-		// add the item to the search index
-		HGSResult* result = [HGSResult resultWithDictionary:dictionary source:self];
-		[self indexResult:result];
+	while ((status = SecKeychainSearchCopyNext(searchRef, &itemRef)) == noErr) {
+		
+		// create an indexable result for the item and index it
+		HGSResult* result = [[self class] resultForItem:itemRef ofClass:targetClass];
+		if (result) {
+			[self indexResult:result];
+		}
 
 		CFRelease(itemRef);
 	}
-
+	if (status != errSecItemNotFound) {
+		NSLog(@"KeychainItemsSource: error %d while iterating through search results", status);
+	}
+	
 	CFRelease(searchRef);
+}
+
+- (void)updateIndex {
+	[self clearResultIndex];
+	[self searchSecurityClass:kSecInternetPasswordItemClass];
+	[self searchSecurityClass:kSecGenericPasswordItemClass];
 }
 
 @end
