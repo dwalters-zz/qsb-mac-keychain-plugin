@@ -1,0 +1,14 @@
+//
+//  KeychainItems_Prefix.pch
+//  KeychainItems
+//
+//  Created by Dan Walters on 5/17/09.
+//  Copyright __MyCompanyName__ 2009. All rights reserved.
+//
+
+
+#ifdef __OBJC__
+  #import <Cocoa/Cocoa.h>
+  #import <Vermilion/Vermilion.h>
+  #import <GTM/GTMDefines.h>
+#endif
