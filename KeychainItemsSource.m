@@ -7,31 +7,69 @@
 //
 
 #import <Vermilion/Vermilion.h>
+#import <Security/Security.h>
 
-@interface KeychainItemsSource : HGSCallbackSearchSource
+@interface KeychainItemsSource : HGSMemorySearchSource
+- (void)updateIndex;
 @end
+
+// callback for when the keychain has been updated
+static OSStatus KeychainModified(SecKeychainEvent keychainEvent,
+								 SecKeychainCallbackInfo *info,
+								 void *context)
+{
+	KeychainItemsSource *source = (KeychainItemsSource *)context;
+	[source updateIndex];
+	return noErr;
+}
 
 @implementation KeychainItemsSource
 
-//- (BOOL)isValidSourceForQuery:(HGSQuery *)query {
-//  return YES;
-//}
+- (id)initWithConfiguration:(NSDictionary *)configuration {
+	if ((self = [super initWithConfiguration:configuration])) {
+		// build the initial index
+		[self updateIndex];
 
-// Collect results for a search operation. You can use the pivot object
-// and unique words to perform your search
-- (void)performSearchOperation:(HGSSearchOperation*)operation {
-  // The query
-  // HGSQuery *query = [operation query];
-  // The pivot object (if any)
-  // HGSResult *pivotObject = [query pivotObject];
-  // NSArray *words = [query uniqueWords];
-  NSURL *url = [NSURL URLWithString:@"http://localhost"];
-  HGSResult *result = [HGSResult resultWithURL:url
-                                          name:NSStringFromClass([self class])
-                                          type:kHGSTypeWebpage
-                                        source:self
-                                    attributes:nil];
-  [operation setResults:[NSArray arrayWithObject:result]];
+		// register a callback for when the keychain is modified
+		if (SecKeychainAddCallback(KeychainModified, kSecAddEventMask | kSecDeleteEventMask | kSecUpdateEventMask | kSecDefaultChangedEventMask | kSecKeychainListChangedMask, self)) {
+			NSLog(@"error adding keychain callback");
+		}
+	}
+	return self;
+}
+
+- (void)dealloc {
+	// remove the keychain modification callback
+	if (SecKeychainRemoveCallback(KeychainModified)) {
+		NSLog(@"error removing keychain callback");
+	}
+
+	[super dealloc];
+}
+
+- (void)updateIndex {
+	[self clearResultIndex];
+
+	// TODO: want more than internet password items
+	SecKeychainSearchRef searchRef = NULL;
+	if (SecKeychainSearchCreateFromAttributes(NULL, kSecInternetPasswordItemClass, NULL, &searchRef)) {
+		NSLog(@"error creating keychain search");
+		return;
+	}
+
+	SecKeychainItemRef itemRef;
+	while (!SecKeychainSearchCopyNext(searchRef, &itemRef)) {
+		NSDictionary* dictionary = [NSDictionary dictionary];
+		// TODO: get the item name from the itemRef and store in the dictionary
+
+		// add the item to the search index
+		HGSResult* result = [HGSResult resultWithDictionary:dictionary source:self];
+		[self indexResult:result];
+
+		CFRelease(itemRef);
+	}
+
+	CFRelease(searchRef);
 }
 
 @end
