@@ -24,7 +24,7 @@
 			<key>HGSExtensionClass</key>
 			<string>KeychainItemsSource</string>
 			<key>HGSExtensionIdentifier</key>
-			<string>com.github.dwalters.source.KeychainItems</string>
+			<string>com.github.dwalters.qsb.keychain.source</string>
 			<key>HGSExtensionPoint</key>
 			<string>HGSSourcesExtensionPoint</string>
 			<key>HGSExtensionUserVisibleName</key>
@@ -38,13 +38,13 @@
 			<key>HGSExtensionPoint</key>
 			<string>HGSActionsExtensionPoint</string>
 			<key>HGSExtensionIdentifier</key>
-			<string>com.github.dwalters.action.KeychainItems</string>
+			<string>com.github.dwalters.qsb.keychain.action</string>
 			<key>HGSActionDirectObjectTypes</key>
 			<array>
-				<string>*</string>
+				<string>keychain</string>
 			</array>
 			<key>HGSExtensionUserVisibleName</key>
-			<string>KeychainItems Action</string>
+			<string>Copy Password</string>
 			<key>HGSExtensionIconImagePath</key>
 			<string></string>
 		</dict>

@@ -9,9 +9,13 @@
 #import <Vermilion/Vermilion.h>
 #import <Security/Security.h>
 
-#define kHGSTypeKeychainAction HGS_SUBTYPE(kHGSTypeAction, @"keychain")
+NSString *kKeychainAttrItemRef = @"keychainItemRef";
+static NSString *kKeychainItemType = @"keychain";
 
-@interface KeychainItemsSource : HGSMemorySearchSource
+@interface KeychainItemsSource : HGSMemorySearchSource {
+ @private
+  NSImage *keychainIcon_;
+}
 - (void)updateIndex;
 @end
 
@@ -28,7 +32,7 @@ static OSStatus KeychainModified(SecKeychainEvent keychainEvent,
 
 @implementation KeychainItemsSource
 
-+ (HGSResult*)resultForItem:(SecKeychainItemRef)itemRef ofClass:(SecItemClass)itemClass {
+- (HGSResult*)resultForItem:(SecKeychainItemRef)itemRef ofClass:(SecItemClass)itemClass {
 	// desired attributes
 	SecKeychainAttribute labelAttr;
 	labelAttr.tag = kSecLabelItemAttr;
@@ -45,17 +49,25 @@ static OSStatus KeychainModified(SecKeychainEvent keychainEvent,
 	NSString *label = [NSString stringWithCString:labelAttr.data
                                          length:labelAttr.length];
 	NSString *url = [NSString stringWithFormat:@"keychain://%@/%@", @"default", label];
-	NSDictionary *attributes = [NSDictionary dictionaryWithObject:[NSNumber numberWithInt:(int)itemRef]
-                                                         forKey:@"secItemRef"];
+	NSMutableDictionary *attributes =
+    [NSMutableDictionary dictionaryWithObjectsAndKeys:
+      keychainIcon_, kHGSObjectAttributeIconKey,
+      itemRef, kKeychainAttrItemRef,
+      nil];
 	return [HGSResult resultWithURL:[NSURL URLWithString:url]
                              name:label
-                             type:kHGSTypeKeychainAction
+                             type:kKeychainItemType
                            source:self
                        attributes:attributes];
 }
 
 - (id)initWithConfiguration:(NSDictionary *)configuration {
 	if ((self = [super initWithConfiguration:configuration])) {
+    // use the keychain access icon
+    NSWorkspace *ws = [NSWorkspace sharedWorkspace];
+    keychainIcon_ = [ws iconForFile:[ws absolutePathForAppBundleWithIdentifier:@"com.apple.keychainaccess"]];
+    [keychainIcon_ retain];
+
 		// build the initial index
 		[self updateIndex];
     
@@ -80,7 +92,8 @@ static OSStatus KeychainModified(SecKeychainEvent keychainEvent,
 	if (result != noErr) {
 		HGSLog(@"KeychainItemsSource: error %d while removing modification callback", result);
 	}
-  
+
+  [keychainIcon_ release];
 	[super dealloc];
 }
 
@@ -96,7 +109,7 @@ static OSStatus KeychainModified(SecKeychainEvent keychainEvent,
 	while ((result = SecKeychainSearchCopyNext(searchRef, &itemRef)) == noErr) {
 		
 		// create an indexable result for the item and index it
-		HGSResult* newResult = [[self class] resultForItem:itemRef ofClass:targetClass];
+		HGSResult* newResult = [self resultForItem:itemRef ofClass:targetClass];
 		if (newResult) {
 			HGSLogDebug(@"KeychainItemsSource: adding '%@' to cache", [newResult displayName]);
 			[self indexResult:newResult];
