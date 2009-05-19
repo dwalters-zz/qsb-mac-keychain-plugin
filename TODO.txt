@@ -1,9 +1,11 @@
 - look into itemRef validaty when a search is no longer in process
 - how to archive/unarchive itemRef?  maybe we just prohibit for now?
 - ensure itemref is freed with HGSResult (might need a subclass) if we maintain current strategy
+- generally ensure i'm doing memory management properly
 - default action for an item should be set (prob to copy password, but maybe to view ... ideally configurable)
 - should we clear out and reload the cache on keychain lock/unlock events?
 - need support for copying account name as well
 - a simple view item action should be possible (just display lots of relevant info via growl, etc.)
 - some enhanced searching ability (substring of entry names)
 - secure note support
+- more code reuse with core framework (KeychainItem, in particular)

@@ -35,11 +35,24 @@ extern NSString *kKeychainAttrItemRef;
         HGSLog(@"KeychainItemsAction: error %d while copying keychain item data", res);
         return NO;
       }
+      NSString *content = [NSString stringWithCString:data length:len];
 
+#if 1
+      NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
+      NSDictionary *messageDict = [NSDictionary dictionaryWithObjectsAndKeys:
+        [result displayName], kHGSSummaryMessageKey,
+        content, kHGSDescriptionMessageKey,
+        kHGSSuccessCodeSuccess, kHGSSuccessCodeMessageKey,
+        nil];
+      [nc postNotificationName:kHGSUserMessageNotification 
+                        object:self
+                      userInfo:messageDict];
+#else
       // put it on the clipboard
       [[NSPasteboard generalPasteboard] declareTypes:[NSArray arrayWithObjects:NSStringPboardType, nil] owner:self];
-      [[NSPasteboard generalPasteboard] setString:[NSString stringWithCString:data length:len] forType:NSStringPboardType];
-      
+      [[NSPasteboard generalPasteboard] setString:content forType:NSStringPboardType];
+#endif
+
       // free the free
       SecKeychainItemFreeContent(NULL, data);
     }

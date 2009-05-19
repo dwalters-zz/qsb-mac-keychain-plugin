@@ -13,6 +13,7 @@
 		7F38DE690F688CC20051B7E3 /* GTM.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7F38DE680F688CC20051B7E3 /* GTM.framework */; };
 		7F80FC720F696C5B00228142 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7F80FC710F696C5B00228142 /* Cocoa.framework */; };
 		8B0D217E0F796E1C00FD4A12 /* HGSBundle.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B0D217D0F796E1C00FD4A12 /* HGSBundle.m */; };
+		A91A31A00FC27C38007A626A /* TODO.txt in Resources */ = {isa = PBXBuildFile; fileRef = A91A319F0FC27C38007A626A /* TODO.txt */; };
 		A96EC3640FC0E65C00C7651B /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A96EC3630FC0E65C00C7651B /* Security.framework */; };
 /* End PBXBuildFile section */
 
@@ -30,6 +31,7 @@
 		8BAA94490F7A6EBC00DF4F12 /* LoadableBundle.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; name = LoadableBundle.xcconfig; path = "externals/google-toolbox-for-mac/XcodeConfig/Target/LoadableBundle.xcconfig"; sourceTree = QSBSRCROOT; };
 		8D5B49B6048680CD000E48DA /* KeychainItems.hgs */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = KeychainItems.hgs; sourceTree = BUILT_PRODUCTS_DIR; };
 		8D5B49B7048680CD000E48DA /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		A91A319F0FC27C38007A626A /* TODO.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = TODO.txt; sourceTree = "<group>"; };
 		A96EC3630FC0E65C00C7651B /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = /System/Library/Frameworks/Security.framework; sourceTree = "<absolute>"; };
 /* End PBXFileReference section */
 
@@ -51,6 +53,7 @@
 		089C166AFE841209C02AAC07 /* KeychainItems */ = {
 			isa = PBXGroup;
 			children = (
+				A91A319F0FC27C38007A626A /* TODO.txt */,
 				8B0D21FB0F7970DE00FD4A12 /* README.txt */,
 				08FB77AFFE84173DC02AAC07 /* Classes */,
 				32C88E010371C26100C91783 /* Other Sources */,
@@ -160,6 +163,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A91A31A00FC27C38007A626A /* TODO.txt in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
