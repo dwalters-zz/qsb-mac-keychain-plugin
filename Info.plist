@@ -36,17 +36,49 @@
 		</dict>
 		<dict>
 			<key>HGSExtensionClass</key>
-			<string>KeychainItemsAction</string>
+			<string>CopyPasswordAction</string>
 			<key>HGSExtensionPoint</key>
 			<string>HGSActionsExtensionPoint</string>
 			<key>HGSExtensionIdentifier</key>
-			<string>com.github.dwalters.qsb.keychain.action</string>
+			<string>com.github.dwalters.qsb.keychain.copypassword</string>
 			<key>HGSActionDirectObjectTypes</key>
 			<array>
 				<string>keychain</string>
 			</array>
 			<key>HGSExtensionUserVisibleName</key>
 			<string>Copy Password</string>
+			<key>HGSExtensionIconImagePath</key>
+			<string></string>
+		</dict>
+		<dict>
+			<key>HGSExtensionClass</key>
+			<string>CopyAccountNameAction</string>
+			<key>HGSExtensionPoint</key>
+			<string>HGSActionsExtensionPoint</string>
+			<key>HGSExtensionIdentifier</key>
+			<string>com.github.dwalters.qsb.keychain.copyaccountname</string>
+			<key>HGSActionDirectObjectTypes</key>
+			<array>
+				<string>keychain</string>
+			</array>
+			<key>HGSExtensionUserVisibleName</key>
+			<string>Copy Account Name</string>
+			<key>HGSExtensionIconImagePath</key>
+			<string></string>
+		</dict>
+		<dict>
+			<key>HGSExtensionClass</key>
+			<string>ShowKeychainItemAction</string>
+			<key>HGSExtensionPoint</key>
+			<string>HGSActionsExtensionPoint</string>
+			<key>HGSExtensionIdentifier</key>
+			<string>com.github.dwalters.qsb.keychain.showkeychainitem</string>
+			<key>HGSActionDirectObjectTypes</key>
+			<array>
+				<string>keychain</string>
+			</array>
+			<key>HGSExtensionUserVisibleName</key>
+			<string>Show Keychain Item</string>
 			<key>HGSExtensionIconImagePath</key>
 			<string></string>
 		</dict>

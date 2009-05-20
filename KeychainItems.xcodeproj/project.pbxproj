@@ -8,7 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		7F38DCE40F6864D90051B7E3 /* KeychainItemsSource.m in Sources */ = {isa = PBXBuildFile; fileRef = 7F38DCE00F6864D90051B7E3 /* KeychainItemsSource.m */; };
-		7F38DCE50F6864D90051B7E3 /* KeychainItemsAction.m in Sources */ = {isa = PBXBuildFile; fileRef = 7F38DCE20F6864D90051B7E3 /* KeychainItemsAction.m */; };
+		7F38DCE50F6864D90051B7E3 /* KeychainItemsActions.m in Sources */ = {isa = PBXBuildFile; fileRef = 7F38DCE20F6864D90051B7E3 /* KeychainItemsActions.m */; };
 		7F38DD3B0F68694B0051B7E3 /* Vermilion.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7F38DD3A0F68694B0051B7E3 /* Vermilion.framework */; };
 		7F38DE690F688CC20051B7E3 /* GTM.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7F38DE680F688CC20051B7E3 /* GTM.framework */; };
 		7F80FC720F696C5B00228142 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7F80FC710F696C5B00228142 /* Cocoa.framework */; };
@@ -20,7 +20,7 @@
 
 /* Begin PBXFileReference section */
 		7F38DCE00F6864D90051B7E3 /* KeychainItemsSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KeychainItemsSource.m; sourceTree = "<group>"; };
-		7F38DCE20F6864D90051B7E3 /* KeychainItemsAction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KeychainItemsAction.m; sourceTree = "<group>"; };
+		7F38DCE20F6864D90051B7E3 /* KeychainItemsActions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KeychainItemsActions.m; sourceTree = "<group>"; };
 		7F38DCE90F6865290051B7E3 /* KeychainItems_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KeychainItems_Prefix.pch; sourceTree = "<group>"; };
 		7F38DD3A0F68694B0051B7E3 /* Vermilion.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Vermilion.framework; sourceTree = QSBBUILDROOT; };
 		7F38DE680F688CC20051B7E3 /* GTM.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = GTM.framework; sourceTree = QSBBUILDROOT; };
@@ -87,7 +87,7 @@
 			isa = PBXGroup;
 			children = (
 				7F38DCE00F6864D90051B7E3 /* KeychainItemsSource.m */,
-				7F38DCE20F6864D90051B7E3 /* KeychainItemsAction.m */,
+				7F38DCE20F6864D90051B7E3 /* KeychainItemsActions.m */,
 				A990BC2F0FC3890500F07039 /* KeychainItemExt.h */,
 				A990BC300FC3890500F07039 /* KeychainItemExt.m */,
 			);
@@ -180,7 +180,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				7F38DCE40F6864D90051B7E3 /* KeychainItemsSource.m in Sources */,
-				7F38DCE50F6864D90051B7E3 /* KeychainItemsAction.m in Sources */,
+				7F38DCE50F6864D90051B7E3 /* KeychainItemsActions.m in Sources */,
 				8B0D217E0F796E1C00FD4A12 /* HGSBundle.m in Sources */,
 				A990BC310FC3890500F07039 /* KeychainItemExt.m in Sources */,
 			);
