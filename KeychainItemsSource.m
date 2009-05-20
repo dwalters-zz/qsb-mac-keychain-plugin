@@ -11,6 +11,7 @@
 
 const NSString *kKeychainItemKey = @"keychainItem";
 static NSString *kKeychainItemType = @"keychain";
+static NSString *kCopyPasswordAction = @"com.github.dwalters.qsb.keychain.copypassword";
 
 @interface KeychainItemsSource : HGSMemorySearchSource {
  @private
@@ -36,29 +37,20 @@ static OSStatus KeychainModified(SecKeychainEvent keychainEvent,
   CFRetain(itemRef); // KeychainItem releases but doesn't retain
   KeychainItem *item = [[[KeychainItem alloc] initWithRef:itemRef] autorelease];
 
-	// desired attributes
-	SecKeychainAttribute labelAttr;
-	labelAttr.tag = kSecLabelItemAttr;
-	SecKeychainAttributeList attrList = {1, &labelAttr};
-  
-	// retrieve the attributes
-	OSStatus result = SecKeychainItemCopyContent(itemRef, NULL, &attrList, NULL, NULL);
-	if (result != noErr) {
-		HGSLog(@"KeychainItemsSource: error %d while getting item content", result);
-		return nil;
-	}
-  
 	// create and return the result
-	NSString *name = [NSString stringWithCString:labelAttr.data
-                                        length:labelAttr.length];
+  NSString *name = [item label];
   NSString *urlString = [NSString stringWithFormat:@"keychain://%@/%@",
                          @"default",
                          [name stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
-	NSDictionary *attributes =
-    [NSDictionary dictionaryWithObjectsAndKeys:
+	NSMutableDictionary *attributes =
+    [NSMutableDictionary dictionaryWithObjectsAndKeys:
       keychainIcon_, kHGSObjectAttributeIconKey,
       item, kKeychainItemKey,
       nil];
+  HGSAction *action = [[HGSExtensionPoint actionsPoint] extensionWithIdentifier:kCopyPasswordAction];
+  if (action) {
+    [attributes setObject:action forKey:kHGSObjectAttributeDefaultActionKey];
+  }
 	return [HGSResult resultWithURL:[NSURL URLWithString:urlString]
                              name:name
                              type:kKeychainItemType

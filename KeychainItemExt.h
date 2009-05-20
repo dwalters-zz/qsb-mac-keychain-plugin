@@ -13,5 +13,6 @@
 @end
 
 @interface KeychainItem (KeychainItemsExt)
+- (NSString*)label;
 - (void)unloadData;
 @end

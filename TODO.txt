@@ -1,4 +1,9 @@
+- default action doesn't seem to be working
 - generally ensure i'm doing memory management properly
-- default action for an item should be set (prob to copy password, but maybe to view ... ideally configurable)
 - should we clear out and reload the cache on keychain lock/unlock events?
 - perhaps we could return the text for further chained operations (copy to clipboard, show in large type window, etc.)
+- ability to work with something other than the user's default set of keychains
+- either create our own KeychainItem class or send some work upstream
+  * caching of everything but the content is OK
+  * terminology could be better (content instead of password, etc.)
+- perhaps some filtering on items that are searchable
