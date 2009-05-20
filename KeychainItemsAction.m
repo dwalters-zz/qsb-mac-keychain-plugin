@@ -7,54 +7,44 @@
 //
 
 #import <Vermilion/Vermilion.h>
-#import <Security/Security.h>
+#import <Vermilion/KeychainItem.h>
 
-extern NSString *kKeychainAttrItemRef;
+extern NSString *kKeychainItemKey;
 
 @interface KeychainItemsAction : HGSAction
 @end
 
 @implementation KeychainItemsAction
 
-// Perform an action given a dictionary of info. For now, we are just passing
-// in an array of direct objects, but there may be more keys added to future
-// SDKs
 - (BOOL)performWithInfo:(NSDictionary*)info {
   HGSResultArray *directObjects = [info objectForKey:kHGSActionDirectObjectsKey];
   for (HGSResult *result in directObjects) {
     HGSLogDebug(@"keychain action invoked on '%@'", [result displayName]);
-    SecKeychainItemRef itemRef = (SecKeychainItemRef)[result valueForKey:kKeychainAttrItemRef];
-    if (itemRef) {
-      HGSLogDebug(@"copying password to clipboard");
 
-      // fetch the data
-      UInt32 len;
-      char *data;
-      OSStatus res = SecKeychainItemCopyContent(itemRef, NULL, NULL, &len, (void**)&data);
-      if (res != noErr) {
-        HGSLog(@"KeychainItemsAction: error %d while copying keychain item data", res);
-        return NO;
-      }
-      NSString *content = [NSString stringWithCString:data length:len];
-
+    KeychainItem* item = (KeychainItem*)[result valueForKey:kKeychainItemKey];
+    if (item) {
 #if 1
+      // display in a message
+      NSString *message = [NSString stringWithFormat:@"Username: %@\nPassword: %@", [item username], [item password]];
       NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
       NSDictionary *messageDict = [NSDictionary dictionaryWithObjectsAndKeys:
         [result displayName], kHGSSummaryMessageKey,
-        content, kHGSDescriptionMessageKey,
+        message, kHGSDescriptionMessageKey,
         kHGSSuccessCodeSuccess, kHGSSuccessCodeMessageKey,
         nil];
       [nc postNotificationName:kHGSUserMessageNotification 
                         object:self
                       userInfo:messageDict];
-#else
-      // put it on the clipboard
-      [[NSPasteboard generalPasteboard] declareTypes:[NSArray arrayWithObjects:NSStringPboardType, nil] owner:self];
-      [[NSPasteboard generalPasteboard] setString:content forType:NSStringPboardType];
 #endif
 
-      // free the free
-      SecKeychainItemFreeContent(NULL, data);
+#if 1
+      // put it on the clipboard
+      NSString *password = [item password];
+      [[NSPasteboard generalPasteboard] declareTypes:[NSArray arrayWithObjects:NSStringPboardType, nil] owner:self];
+      [[NSPasteboard generalPasteboard] setString:password forType:NSStringPboardType];
+#endif
+
+      // TODO: tell KeychainItem to release all cached data!
     }
   }
   return YES;

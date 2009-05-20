@@ -7,9 +7,14 @@
 //
 
 #import <Vermilion/Vermilion.h>
-#import <Security/Security.h>
+#import <Vermilion/KeychainItem.h>
 
-NSString *kKeychainAttrItemRef = @"keychainItemRef";
+// HACK: need access to this init method
+@interface KeychainItem()
+- (KeychainItem*)initWithRef:(SecKeychainItemRef)ref;
+@end
+
+const NSString *kKeychainItemKey = @"keychainItem";
 static NSString *kKeychainItemType = @"keychain";
 
 @interface KeychainItemsSource : HGSMemorySearchSource {
@@ -24,7 +29,7 @@ static OSStatus KeychainModified(SecKeychainEvent keychainEvent,
                                  SecKeychainCallbackInfo *info,
                                  void *context)
 {
-	HGSLogDebug(@"KeychainItemsSource: modification event received");
+	HGSLogDebug(@"keychain modification event received");
 	KeychainItemsSource *source = (KeychainItemsSource *)context;
 	[source updateIndex];
 	return noErr;
@@ -33,6 +38,9 @@ static OSStatus KeychainModified(SecKeychainEvent keychainEvent,
 @implementation KeychainItemsSource
 
 - (HGSResult*)resultForItem:(SecKeychainItemRef)itemRef ofClass:(SecItemClass)itemClass {
+  CFRetain(itemRef); // KeychainItem releases but doesn't retain
+  KeychainItem *item = [[[KeychainItem alloc] initWithRef:itemRef] autorelease];
+
 	// desired attributes
 	SecKeychainAttribute labelAttr;
 	labelAttr.tag = kSecLabelItemAttr;
@@ -46,16 +54,18 @@ static OSStatus KeychainModified(SecKeychainEvent keychainEvent,
 	}
   
 	// create and return the result
-	NSString *label = [NSString stringWithCString:labelAttr.data
-                                         length:labelAttr.length];
-	NSString *url = [NSString stringWithFormat:@"keychain://%@/%@", @"default", label];
-	NSMutableDictionary *attributes =
-    [NSMutableDictionary dictionaryWithObjectsAndKeys:
+	NSString *name = [NSString stringWithCString:labelAttr.data
+                                        length:labelAttr.length];
+  NSString *urlString = [NSString stringWithFormat:@"keychain://%@/%@",
+                         @"default",
+                         [name stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
+	NSDictionary *attributes =
+    [NSDictionary dictionaryWithObjectsAndKeys:
       keychainIcon_, kHGSObjectAttributeIconKey,
-      itemRef, kKeychainAttrItemRef,
+      item, kKeychainItemKey,
       nil];
-	return [HGSResult resultWithURL:[NSURL URLWithString:url]
-                             name:label
+	return [HGSResult resultWithURL:[NSURL URLWithString:urlString]
+                             name:name
                              type:kKeychainItemType
                            source:self
                        attributes:attributes];
@@ -111,10 +121,9 @@ static OSStatus KeychainModified(SecKeychainEvent keychainEvent,
 		// create an indexable result for the item and index it
 		HGSResult* newResult = [self resultForItem:itemRef ofClass:targetClass];
 		if (newResult) {
-			HGSLogDebug(@"KeychainItemsSource: adding '%@' to cache", [newResult displayName]);
 			[self indexResult:newResult];
 		}
-    
+
 		CFRelease(itemRef);
 	}
 	if (result != errSecItemNotFound) {
@@ -125,7 +134,7 @@ static OSStatus KeychainModified(SecKeychainEvent keychainEvent,
 }
 
 - (void)updateIndex {
-	HGSLogDebug(@"KeychainItemsSource: updateIndex");
+	HGSLogDebug(@"updating index");
 	[self clearResultIndex];
 	[self searchSecurityClass:kSecInternetPasswordItemClass];
 	[self searchSecurityClass:kSecGenericPasswordItemClass];

@@ -21,6 +21,8 @@
 	<key>HGSExtensions</key>
 	<array>
 		<dict>
+			<key>HGSSearchSourceCannotArchive</key>
+			<true/>
 			<key>HGSExtensionClass</key>
 			<string>KeychainItemsSource</string>
 			<key>HGSExtensionIdentifier</key>
