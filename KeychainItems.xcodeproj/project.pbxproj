@@ -14,6 +14,7 @@
 		7F80FC720F696C5B00228142 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7F80FC710F696C5B00228142 /* Cocoa.framework */; };
 		8B0D217E0F796E1C00FD4A12 /* HGSBundle.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B0D217D0F796E1C00FD4A12 /* HGSBundle.m */; };
 		A91A31A00FC27C38007A626A /* TODO.txt in Resources */ = {isa = PBXBuildFile; fileRef = A91A319F0FC27C38007A626A /* TODO.txt */; };
+		A92A5F040FC424F40009295E /* README.markdown in Resources */ = {isa = PBXBuildFile; fileRef = A92A5F030FC424F40009295E /* README.markdown */; };
 		A96EC3640FC0E65C00C7651B /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A96EC3630FC0E65C00C7651B /* Security.framework */; };
 		A990BC310FC3890500F07039 /* KeychainItemExt.m in Sources */ = {isa = PBXBuildFile; fileRef = A990BC300FC3890500F07039 /* KeychainItemExt.m */; };
 /* End PBXBuildFile section */
@@ -28,11 +29,11 @@
 		7F8450F40F6B1F7B000CD5C1 /* QSBDebug.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; name = QSBDebug.xcconfig; path = QSB/xcconfig/QSBDebug.xcconfig; sourceTree = QSBSRCROOT; };
 		7F8450F50F6B1F7B000CD5C1 /* QSBRelease.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; name = QSBRelease.xcconfig; path = QSB/xcconfig/QSBRelease.xcconfig; sourceTree = QSBSRCROOT; };
 		8B0D217D0F796E1C00FD4A12 /* HGSBundle.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = HGSBundle.m; path = ../Vermilion/Vermilion/HGSBundle.m; sourceTree = QSBSRCROOT; };
-		8B0D21FB0F7970DE00FD4A12 /* README.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README.txt; sourceTree = "<group>"; };
 		8BAA94490F7A6EBC00DF4F12 /* LoadableBundle.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; name = LoadableBundle.xcconfig; path = "externals/google-toolbox-for-mac/XcodeConfig/Target/LoadableBundle.xcconfig"; sourceTree = QSBSRCROOT; };
 		8D5B49B6048680CD000E48DA /* KeychainItems.hgs */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = KeychainItems.hgs; sourceTree = BUILT_PRODUCTS_DIR; };
 		8D5B49B7048680CD000E48DA /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		A91A319F0FC27C38007A626A /* TODO.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = TODO.txt; sourceTree = "<group>"; };
+		A92A5F030FC424F40009295E /* README.markdown */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README.markdown; sourceTree = "<group>"; };
 		A96EC3630FC0E65C00C7651B /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = /System/Library/Frameworks/Security.framework; sourceTree = "<absolute>"; };
 		A990BC2F0FC3890500F07039 /* KeychainItemExt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KeychainItemExt.h; sourceTree = "<group>"; };
 		A990BC300FC3890500F07039 /* KeychainItemExt.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KeychainItemExt.m; sourceTree = "<group>"; };
@@ -56,8 +57,8 @@
 		089C166AFE841209C02AAC07 /* KeychainItems */ = {
 			isa = PBXGroup;
 			children = (
+				A92A5F030FC424F40009295E /* README.markdown */,
 				A91A319F0FC27C38007A626A /* TODO.txt */,
-				8B0D21FB0F7970DE00FD4A12 /* README.txt */,
 				08FB77AFFE84173DC02AAC07 /* Classes */,
 				32C88E010371C26100C91783 /* Other Sources */,
 				089C167CFE841241C02AAC07 /* Resources */,
@@ -169,6 +170,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				A91A31A00FC27C38007A626A /* TODO.txt in Resources */,
+				A92A5F040FC424F40009295E /* README.markdown in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
