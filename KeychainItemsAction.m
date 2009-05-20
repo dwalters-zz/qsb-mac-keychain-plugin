@@ -7,7 +7,7 @@
 //
 
 #import <Vermilion/Vermilion.h>
-#import <Vermilion/KeychainItem.h>
+#import "KeychainItemExt.h"
 
 extern NSString *kKeychainItemKey;
 
@@ -44,7 +44,8 @@ extern NSString *kKeychainItemKey;
       [[NSPasteboard generalPasteboard] setString:password forType:NSStringPboardType];
 #endif
 
-      // TODO: tell KeychainItem to release all cached data!
+      // don't keep the data around
+      [item unloadData];
     }
   }
   return YES;

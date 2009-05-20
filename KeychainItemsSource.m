@@ -7,12 +7,7 @@
 //
 
 #import <Vermilion/Vermilion.h>
-#import <Vermilion/KeychainItem.h>
-
-// HACK: need access to this init method
-@interface KeychainItem()
-- (KeychainItem*)initWithRef:(SecKeychainItemRef)ref;
-@end
+#import "KeychainItemExt.h"
 
 const NSString *kKeychainItemKey = @"keychainItem";
 static NSString *kKeychainItemType = @"keychain";

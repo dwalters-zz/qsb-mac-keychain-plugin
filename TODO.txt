@@ -1,8 +1,5 @@
-- ensure KeychainItem is freed with HGSResult (currently attempting to use autorelease)
 - generally ensure i'm doing memory management properly
 - default action for an item should be set (prob to copy password, but maybe to view ... ideally configurable)
 - should we clear out and reload the cache on keychain lock/unlock events?
 - need support for copying account name as well
-- secure note support
 - perhaps we could return the text for further chained operations (copy to clipboard, show in large type window, etc.)
-- more extension of the core KeychainItem to make things cleaner and more capable
